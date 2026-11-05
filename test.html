@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stats Engine Unit Tests</title>
+  <style>
+    body { font-family: monospace; background: #111; color: #eee; padding: 20px; }
+    .pass { color: #4ade80; }
+    .fail { color: #f87171; font-weight: bold; }
+    .suite { margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Unit Test Runner - Math & Stats Engine</h1>
+  <div id="results">Running tests...</div>
+
+  <script src="stats.js"></script>
+  <script>
+    const resultsEl = document.getElementById('results');
+    const logs = [];
+    let passed = 0;
+    let failed = 0;
+
+    function assert(desc, condition) {
+      if (condition) {
+        passed++;
+        logs.push(`<div class="pass">✔ PASS: ${desc}</div>`);
+      } else {
+        failed++;
+        logs.push(`<div class="fail">✘ FAIL: ${desc}</div>`);
+      }
+    }
+
+    function assertClose(desc, actual, expected, epsilon = 0.0001) {
+      const diff = Math.abs(actual - expected);
+      assert(`${desc} (expected ~${expected}, got ${actual})`, diff <= epsilon);
+    }
+
+    function assertDeepEqual(desc, actual, expected) {
+      assert(`${desc} (expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)})`, 
+        JSON.stringify(actual) === JSON.stringify(expected));
+    }
+
+    try {
+      if (typeof StatsEngine === 'undefined') {
+        throw new Error("StatsEngine is not defined");
+      }
+
+      // Test 1: Parser
+      const p1 = StatsEngine.parseNumberList("10, 20, 30.5  40\n50");
+      assertDeepEqual("parseNumberList parses mixed commas, spaces, newlines", p1, [10, 20, 30.5, 40, 50]);
+
+      const p2 = StatsEngine.parseNumberList("  -5, abc, 12, , 3.14  ");
+      assertDeepEqual("parseNumberList handles negative numbers, decimals and ignores non-numbers", p2, [-5, 12, 3.14]);
+
+      // Test 2: Odd count median & mean
+      const s1 = StatsEngine.calculateStats([3, 1, 4, 1, 5]); // sorted: [1, 1, 3, 4, 5]
+      assert("Odd median is middle value (3)", s1.median === 3);
+      assertClose("Mean is 2.8", s1.mean, 2.8);
+      assert("Count is 5", s1.count === 5);
+      assert("Sum is 14", s1.sum === 14);
+      assert("Min is 1", s1.min === 1);
+      assert("Max is 5", s1.max === 5);
+      assert("Range is 4", s1.range === 4);
+      assertDeepEqual("Mode is [1]", s1.mode, [1]);
+
+      // Test 3: Even count median
+      const s2 = StatsEngine.calculateStats([10, 20, 30, 40]);
+      assert("Even median is average of two middle values (25)", s2.median === 25);
+
+      // Test 4: Multimodal
+      const s3 = StatsEngine.calculateStats([1, 1, 2, 2, 3]);
+      assertDeepEqual("Multimodal returns multiple modes [1, 2]", s3.mode, [1, 2]);
+
+      // Test 5: Single element
+      const s4 = StatsEngine.calculateStats([42]);
+      assert("Single element stats count=1", s4.count === 1);
+      assert("Single element median=42", s4.median === 42);
+      assert("Single element mean=42", s4.mean === 42);
+      assert("Single element sample stdDev=0", s4.sampleStdDev === 0);
+
+      // Test 6: Variance & Standard Deviation
+      // Dataset: [2, 4, 4, 4, 5, 5, 7, 9] => mean = 5
+      // Differences from mean: -3, -1, -1, -1, 0, 0, 2, 4 => squares: 9, 1, 1, 1, 0, 0, 4, 16 => sum=32
+      // Population variance = 32 / 8 = 4, Population stdDev = 2
+      // Sample variance = 32 / 7 = 4.5714, Sample stdDev = 2.138
+      const s5 = StatsEngine.calculateStats([2, 4, 4, 4, 5, 5, 7, 9]);
+      assertClose("Population variance is 4", s5.popVariance, 4);
+      assertClose("Population std dev is 2", s5.popStdDev, 2);
+      assertClose("Sample variance is 4.5714", s5.sampleVariance, 32 / 7);
+      assertClose("Sample std dev is 2.138", s5.sampleStdDev, Math.sqrt(32 / 7));
+
+      // Test 7: Basic math expression evaluator
+      assertClose("Basic calculator addition & multiplication", StatsEngine.evaluateBasic("15 + 4 * 2"), 23);
+      assertClose("Basic calculator division & brackets", StatsEngine.evaluateBasic("(100 - 20) / 4"), 20);
+      assertClose("Basic calculator percentage", StatsEngine.evaluateBasic("50 * 20%"), 10);
+      assertClose("Basic calculator square root", StatsEngine.evaluateBasic("sqrt(144) + 2^3"), 20);
+
+    } catch (err) {
+      failed++;
+      logs.push(`<div class="fail">Error in test runner: ${err.message}</div>`);
+    }
+
+    resultsEl.innerHTML = `
+      <div class="suite">
+        <h3>Results: ${passed} passed, ${failed} failed</h3>
+      </div>
+      ${logs.join('')}
+    `;
+    window.__TEST_RESULTS__ = { passed, failed };
+  </script>
+</body>
+</html>

@@ -1,0 +1,414 @@
+/* ==========================================================================
+   StatsMath atmosphere — deep observatory, cartesian floor, faint glyphs
+   Does not override UI tokens in style.css
+   ========================================================================== */
+
+html {
+  background-color: #070b14;
+}
+
+.app-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(1200px 700px at 50% -10%, rgba(56, 189, 248, 0.22), transparent 58%),
+    radial-gradient(900px 600px at 100% 0%, rgba(139, 92, 246, 0.24), transparent 55%),
+    radial-gradient(800px 500px at 0% 100%, rgba(16, 185, 129, 0.16), transparent 50%),
+    linear-gradient(180deg, #0b1220 0%, #070b14 42%, #05080f 100%);
+}
+
+.app-bg-horizon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(56, 189, 248, 0.15) 18%,
+    rgba(56, 189, 248, 0.85) 48%,
+    rgba(129, 140, 248, 0.7) 58%,
+    rgba(16, 185, 129, 0.25) 78%,
+    transparent 100%
+  );
+  opacity: 0.9;
+}
+
+.app-bg-orbs {
+  position: absolute;
+  inset: -12%;
+  filter: blur(70px);
+  animation: app-bg-drift 28s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.app-bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+}
+
+.app-bg-orb--cyan {
+  width: min(52vw, 560px);
+  height: min(52vw, 560px);
+  top: -8%;
+  right: -6%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.72) 0%, rgba(56, 189, 248, 0) 70%);
+}
+
+.app-bg-orb--violet {
+  width: min(58vw, 620px);
+  height: min(58vw, 620px);
+  bottom: -18%;
+  left: -12%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.68) 0%, rgba(139, 92, 246, 0) 72%);
+}
+
+.app-bg-orb--emerald {
+  width: min(36vw, 380px);
+  height: min(36vw, 380px);
+  top: 42%;
+  right: 12%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.55) 0%, rgba(16, 185, 129, 0) 70%);
+  animation: app-bg-orb-breathe 18s ease-in-out infinite alternate;
+}
+
+.app-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.055) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 85% 70% at 50% 38%, #000 10%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 70% at 50% 38%, #000 10%, transparent 78%);
+}
+
+.app-bg-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(186, 230, 253, 0.16) 1px, transparent 1.2px);
+  background-size: 24px 24px;
+  opacity: 0.35;
+  mask-image: radial-gradient(ellipse 70% 55% at 50% 35%, #000 0%, transparent 72%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 35%, #000 0%, transparent 72%);
+}
+
+.app-bg-floor {
+  position: absolute;
+  left: -25%;
+  right: -25%;
+  bottom: -8%;
+  height: 46%;
+  background-image:
+    linear-gradient(rgba(56, 189, 248, 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.09) 1px, transparent 1px);
+  background-size: 56px 56px;
+  transform: perspective(720px) rotateX(64deg);
+  transform-origin: center bottom;
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.55) 0%, transparent 78%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.55) 0%, transparent 78%);
+  opacity: 0.55;
+}
+
+.app-bg-glyphs {
+  position: absolute;
+  inset: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  color: rgba(186, 230, 253, 0.16);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  user-select: none;
+}
+
+.app-bg-glyphs span {
+  position: absolute;
+  animation: app-bg-glyph-float 22s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+.app-bg-glyphs .g1 { top: 12%; left: 7%; font-size: clamp(2.4rem, 6vw, 5.5rem); animation-delay: -2s; }
+.app-bg-glyphs .g2 { top: 18%; right: 9%; font-size: clamp(2rem, 5vw, 4.4rem); color: rgba(196, 181, 253, 0.1); animation-delay: -8s; }
+.app-bg-glyphs .g3 { top: 58%; left: 11%; font-size: clamp(2.2rem, 5.5vw, 4.8rem); color: rgba(167, 243, 208, 0.1); animation-delay: -5s; }
+.app-bg-glyphs .g4 { bottom: 16%; right: 14%; font-size: clamp(1.8rem, 4.5vw, 3.6rem); animation-delay: -12s; }
+.app-bg-glyphs .g5 { top: 38%; left: 42%; font-size: clamp(1.6rem, 3.8vw, 3rem); color: rgba(125, 211, 252, 0.08); animation-delay: -15s; }
+.app-bg-glyphs .g6 { top: 72%; left: 58%; font-size: clamp(1.7rem, 4vw, 3.2rem); color: rgba(196, 181, 253, 0.09); animation-delay: -9s; }
+.app-bg-glyphs .g7 { top: 8%; left: 48%; font-size: clamp(1.4rem, 3vw, 2.4rem); animation-delay: -18s; opacity: 0.7; }
+.app-bg-glyphs .g8 { bottom: 22%; left: 28%; font-size: clamp(1.5rem, 3.4vw, 2.6rem); color: rgba(167, 243, 208, 0.09); animation-delay: -6s; }
+
+.app-bg-noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+.app-bg-vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 70% at 50% 40%, transparent 40%, rgba(5, 8, 15, 0.55) 100%);
+}
+
+@keyframes app-bg-drift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-2.4%, 1.6%) scale(1.06); }
+  100% { transform: translate(1.8%, -1.2%) scale(1.02); }
+}
+
+@keyframes app-bg-orb-breathe {
+  0% { transform: translate(0, 0) scale(0.92); opacity: 0.75; }
+  100% { transform: translate(-8%, 6%) scale(1.12); opacity: 1; }
+}
+
+@keyframes app-bg-glyph-float {
+  0% { transform: translate(0, 0); opacity: 0.55; }
+  50% { transform: translate(8px, -14px); opacity: 1; }
+  100% { transform: translate(-6px, 8px); opacity: 0.7; }
+}
+
+@media (max-width: 700px) {
+  .app-bg-glyphs .g5,
+  .app-bg-glyphs .g7,
+  .app-bg-glyphs .g8 {
+    display: none;
+  }
+
+  .app-bg-orbs {
+    filter: blur(56px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-bg-orbs,
+  .app-bg-orb--emerald,
+  .app-bg-glyphs span {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+   Luxury black + translucent cards (override block)
+   ========================================================================== */
+
+html,
+body {
+  background-color: #000;
+}
+
+:root {
+  --bg-main: #000;
+  --bg-card: rgba(255, 255, 255, 0.035);
+  --bg-surface: rgba(10, 10, 12, 0.55);
+  --bg-surface-elevated: rgba(255, 255, 255, 0.07);
+  --border-subtle: rgba(255, 255, 255, 0.07);
+}
+
+/* Pure black base, softly blurred atmosphere */
+.app-bg {
+  inset: -24px;
+  filter: blur(2.5px);
+  background:
+    radial-gradient(1000px 600px at 50% -15%, rgba(56, 189, 248, 0.10), transparent 60%),
+    radial-gradient(800px 520px at 100% 0%, rgba(139, 92, 246, 0.10), transparent 55%),
+    radial-gradient(700px 450px at 0% 100%, rgba(16, 185, 129, 0.07), transparent 50%),
+    linear-gradient(180deg, #050506 0%, #000 45%, #000 100%);
+}
+
+.app-bg-orbs { opacity: 0.45; }
+.app-bg-grid { opacity: 0.6; }
+.app-bg-vignette {
+  background: radial-gradient(ellipse 80% 70% at 50% 40%, transparent 30%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+/* More transparent glass cards */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(22px) saturate(1.2);
+  -webkit-backdrop-filter: blur(22px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+              box-shadow 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+}
+
+/* Gentle lift on hover */
+.glass-panel:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.stat-hero-box,
+.metric-item,
+.sorted-preview-box,
+.history-item {
+  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.3s ease,
+              border-color 0.3s ease, background 0.3s ease;
+}
+
+.stat-hero-box:hover,
+.metric-item:hover,
+.history-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+}
+
+/* Inner boxes more transparent too */
+.metric-item,
+.sorted-preview-box,
+.history-item {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.history-drawer {
+  background: rgba(8, 8, 10, 0.78);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+@media (hover: none) {
+  .glass-panel:hover,
+  .stat-hero-box:hover,
+  .metric-item:hover,
+  .history-item:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-panel,
+  .glass-panel:hover,
+  .stat-hero-box:hover,
+  .metric-item:hover,
+  .history-item:hover {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Stable digit width while numbers count up */
+.stat-hero-val,
+.metric-val {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   Info icon + formula tooltip (floating element, see info-tooltip.js)
+   ========================================================================== */
+
+.info-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 6px;
+  vertical-align: middle;
+  border-radius: 50%;
+  border: 1.5px solid rgba(186, 230, 253, 0.7);
+  color: rgba(186, 230, 253, 0.95);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: 0;
+  cursor: help;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.info-icon:hover,
+.info-icon:focus-visible,
+.info-icon.is-open {
+  outline: none;
+  background: rgba(56, 189, 248, 0.18);
+  border-color: rgba(125, 211, 252, 0.9);
+}
+
+/* The tooltip itself lives on <body>, not inside the icon */
+.info-floating {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  max-width: 300px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(8, 8, 10, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  color: #e2e8f0;
+  font-family: "Cambria Math", "Times New Roman", Georgia, serif;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: normal;
+  text-align: left;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.info-floating.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.info-floating sub,
+.info-floating sup {
+  font-size: 0.7em;
+  line-height: 0;
+}
+
+/* Phép chia viết thành phân số */
+.info-floating .frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+  margin: 0 3px;
+  text-align: center;
+}
+
+.info-floating .frac .num {
+  padding: 0 4px 2px;
+  border-bottom: 1px solid currentColor;
+}
+
+.info-floating .frac .den {
+  padding: 2px 4px 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .info-floating {
+    transition: none;
+  }
+}
+/* ==========================================================================
+   Larger text across the app (style.css uses rem, so scaling the root works)
+   ========================================================================== */
+
+html {
+  font-size: 110%; /* ~16px -> ~17.6px */
+}
+
+/* Icon and tooltip text were fixed in px, so bump them too */
+.info-icon {
+  font-size: 12px;
+}
+
+.info-floating {
+  font-size: 15px;
+}

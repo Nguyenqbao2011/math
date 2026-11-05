@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Math & Thống Kê Pro | Tính Trung Bình, Trung Vị & Máy Tính</title>
+
+  <!-- SEO & PWA Meta -->
+  <meta name="description" content="Công cụ tính toán thống kê online và ngoại tuyến: tính trung bình, trung vị, mode, độ lệch chuẩn, phương sai và máy tính toán học cơ bản. Hoạt động trên máy tính và điện thoại.">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="neo-kinpaku.css">
+</head>
+<body>
+  <div class="app-bg" aria-hidden="true">
+    <div class="app-bg-orbs">
+      <span class="app-bg-orb app-bg-orb--cyan"></span>
+      <span class="app-bg-orb app-bg-orb--violet"></span>
+      <span class="app-bg-orb app-bg-orb--emerald"></span>
+    </div>
+    <div class="app-bg-grid"></div>
+    <div class="app-bg-dots"></div>
+    <div class="app-bg-floor"></div>
+    <div class="app-bg-glyphs">
+      <span class="g1">x̄</span>
+      <span class="g2">σ</span>
+      <span class="g3">Σ</span>
+      <span class="g4">μ</span>
+      <span class="g5">√</span>
+      <span class="g6">π</span>
+      <span class="g7">n</span>
+      <span class="g8">Me</span>
+    </div>
+    <div class="app-bg-noise"></div>
+    <div class="app-bg-vignette"></div>
+    <div class="app-bg-horizon"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo-wrapper">
+          <img src="icons/icon.svg" alt="App Logo" width="40" height="40" class="logo-icon">
+        </div>
+        <div>
+          <h1 class="brand-title">StatsMath <span class="badge-pro">PRO</span></h1>
+          <p class="brand-subtitle">Thống kê dữ liệu & Toán học tiện lợi</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="btnHistoryToggle" class="btn btn-secondary" title="Xem lịch sử tính toán" aria-label="Xem lịch sử">
+          <span class="icon">📜</span>
+          <span class="btn-text">Lịch sử</span>
+          <span id="historyCountBadge" class="history-badge">0</span>
+        </button>
+
+        <button id="btnInstallApp" class="btn btn-install hidden" title="Cài đặt ứng dụng lên máy" aria-label="Cài đặt App">
+          <span class="icon">📲</span>
+          <span class="btn-text">Cài App</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs" role="tablist">
+      <button id="tabStats" class="tab-btn active" role="tab" aria-selected="true" data-tab="statsView">
+        <span class="tab-icon">📊</span>
+        <span>Thống Kê Dữ Liệu</span>
+      </button>
+      <button id="tabCalc" class="tab-btn" role="tab" aria-selected="false" data-tab="calcView">
+        <span class="tab-icon">🔢</span>
+        <span>Máy Tính Cơ Bản</span>
+      </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- VIEW 1: Statistics Toolkit -->
+      <section id="statsView" class="view-panel active" role="tabpanel">
+        <div class="stats-layout">
+
+          <!-- Left Column: Input Methods -->
+          <div class="input-card card glass-panel">
+            <div class="card-header">
+              <h2 class="card-title">Nhập Dữ Liệu</h2>
+              <span class="card-hint">Hỗ trợ số nguyên, số thập phân, số âm</span>
+            </div>
+
+            <!-- Single Number Entry (Chip Adder) -->
+            <div class="input-group">
+              <label for="singleNumberInput" class="input-label">Thêm từng số riêng lẻ:</label>
+              <form id="singleNumberForm" class="single-entry-form" onsubmit="return false;">
+                <input
+                  type="number"
+                  step="any"
+                  id="singleNumberInput"
+                  class="text-input"
+                  placeholder="Ví dụ: 8.5 hoặc -15..."
+                  autocomplete="off"
+                >
+                <button type="button" id="btnAddNumber" class="btn btn-primary">
+                  <span class="icon">+</span>
+                  <span>Thêm</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Chip Display Container -->
+            <div class="chips-wrapper">
+              <div class="chips-header">
+                <span class="chips-title">Danh sách số đã sắp xếp ↑ (<span id="chipCount">0</span> số):</span>
+                <button type="button" id="btnClearAll" class="btn-text-danger" title="Xóa toàn bộ số">Xóa hết</button>
+              </div>
+              <div id="chipsContainer" class="chips-container" tabindex="0" aria-label="Danh sách số đã nhập">
+                <span class="chips-empty-msg">Chưa có số nào. Nhập số bên trên hoặc dán danh sách bên dưới.</span>
+              </div>
+            </div>
+
+            <div class="divider"><span>HOẶC DÁN NHANH</span></div>
+
+            <!-- Bulk Paste Textarea -->
+            <div class="input-group">
+              <div class="label-row">
+                <label for="bulkNumbersTextarea" class="input-label">Dán danh sách số (cách bởi dấu phẩy, khoảng trắng):</label>
+                <button type="button" id="btnSampleData" class="btn-link" title="Nạp thử mẫu số liệu để xem kết quả">Mẫu thử</button>
+              </div>
+              <textarea
+                id="bulkNumbersTextarea"
+                class="textarea-input"
+                rows="4"
+                placeholder="Ví dụ: 12, 45, 67.5, 23, 89, -4, 12, 50, 67.5..."
+              ></textarea>
+            </div>
+
+            <!-- Actions row -->
+            <div class="input-actions-row">
+              <button type="button" id="btnSaveHistory" class="btn btn-accent" title="Lưu phiên tính toán này vào lịch sử">
+                <span>💾 Lưu vào Lịch sử</span>
+              </button>
+              <button type="button" id="btnCopyStats" class="btn btn-secondary" title="Sao chép báo cáo kết quả">
+                <span>📋 Sao chép kết quả</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Column: Computed Statistics Results -->
+          <div class="results-card card glass-panel">
+            <div class="card-header">
+              <h2 class="card-title">Kết Quả Thống Kê</h2>
+              <span id="liveStatusBadge" class="status-badge">Tự động cập nhật</span>
+            </div>
+
+            <!-- Hero Highlights: Mean & Median -->
+            <div class="hero-stats-grid">
+              <!-- TRUNG BÌNH (Mean) -->
+              <div class="stat-hero-box mean-box">
+                <div class="stat-hero-top">
+                  <span class="stat-hero-label">TRUNG BÌNH (Mean / x̄)
+                    <span class="info-icon" tabindex="0" role="img" aria-label="Công thức trung bình" data-formula='x̄ = <span class="frac"><span class="num">x₁ + x₂ + … + xₙ</span><span class="den">n</span></span>'>i</span>
+                  </span>
+                  <button class="copy-small-btn" data-copy="mean" title="Sao chép trung bình">📋</button>
+                </div>
+                <div class="stat-hero-val" id="valMean">-</div>
+                <div class="stat-hero-desc">Tổng các số chia cho số lượng phần tử</div>
+              </div>
+
+              <!-- TRUNG VỊ (Median) -->
+              <div class="stat-hero-box median-box">
+                <div class="stat-hero-top">
+                  <span class="stat-hero-label">TRUNG VỊ (Median / Me)
+                    <span class="info-icon" tabindex="0" role="img" aria-label="Công thức trung vị" data-formula='Dãy đã sắp xếp. n lẻ: Me = x<sub>(n+1)/2</sub>. n chẵn: Me = <span class="frac"><span class="num">x<sub>n/2</sub> + x<sub>n/2+1</sub></span><span class="den">2</span></span>'>i</span>
+                  </span>
+                  <button class="copy-small-btn" data-copy="median" title="Sao chép trung vị">📋</button>
+                </div>
+                <div class="stat-hero-val" id="valMedian">-</div>
+                <div class="stat-hero-desc">Giá trị chính giữa khi đã sắp xếp dãy số</div>
+              </div>
+            </div>
+
+            <!-- Detailed Metrics Grid -->
+            <div class="metrics-grid">
+              <div class="metric-item">
+                <span class="metric-label">Mốt (Mode / Mo)
+                  <span class="info-icon" tabindex="0" role="img" aria-label="Công thức mốt" data-formula='M₀ = giá trị có tần số xuất hiện lớn nhất'>i</span>
+                </span>
+                <span class="metric-val" id="valMode">-</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Số lượng phần tử (N)
+                  <span class="info-icon" tabindex="0" role="img" aria-label="Công thức số lượng" data-formula='n = số phần tử của dãy số liệu'>i</span>
+                </span>
+                <span class="metric-val" id="valCount">0</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Tổng cộng (Sum / Σ)
+                  <span class="info-icon" tabindex="0" role="img" aria-label="Công thức tổng" data-formula='Σxᵢ = x₁ + x₂ + … + xₙ'>i</span>
+                </span>
+                <span class="metric-val" id="valSum">-</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Khoảng biến thiên (Range)
+                  <span class="info-icon" tabindex="0" role="img" aria-label="Công thức khoảng biến thiên" data-formula='R = x<sub>max</sub> − x<sub>min</sub>'>i</span>
+                </span>
+                <span class="metric-val" id="valRange">-</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Giá trị nhỏ nhất (Min)
+                  <span class="info-icon" tabindex="0" role="img" aria-label="Công thức giá trị nhỏ nhất" data-formula='x<sub>min</sub> = giá trị nhỏ nhất của dãy số liệu'>i</span>
+                </span>
+                <span class="metric-val" id="valMin">-</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Tứ phân vị 1 (Q₁)
+                  <span class="info-icon" tabindex="0" role="img" aria-label="Công thức tứ phân vị 1" data-formula='Q₁ = trung vị của nửa dưới dãy số (25%)'>i</span>
+                </span>
+                <span class="metric-val" id="valQ1">-</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Tứ phân vị 3 (Q₃)
+                  <span class="info-icon" tabindex="0" role="img" aria-label="Công thức tứ phân vị 3" data-formula='Q₃ = trung vị của nửa trên dãy số (75%)'>i</span>
+                </span>
+                <span class="metric-val" id="valQ3">-</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Giá trị lớn nhất (Max)
+                  <span class="info-icon" tabindex="0" role="img" aria-label="Công thức giá trị lớn nhất" data-formula='x<sub>max</sub> = giá trị lớn nhất của dãy số liệu'>i</span>
+                </span>
+                <span class="metric-val" id="valMax">-</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Khoảng tứ phân vị (IQR)
+                  <span class="info-icon" tabindex="0" role="img" aria-label="Công thức IQR" data-formula='IQR = Q₃ − Q₁'>i</span>
+                </span>
+                <span class="metric-val" id="valIQR">-</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Độ lệch chuẩn (Std Dev / σ)
+                  <span class="info-icon" tabindex="0" role="img" aria-label="Công thức độ lệch chuẩn" data-formula='s = √<span class="frac"><span class="num">(x₁ − x̄)² + … + (xₙ − x̄)²</span><span class="den">n</span></span>'>i</span>
+                </span>
+                <span class="metric-val" id="valPopStdDev">-</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Phương sai (Variance / σ²)
+                  <span class="info-icon" tabindex="0" role="img" aria-label="Công thức phương sai" data-formula='s² = <span class="frac"><span class="num">(x₁ − x̄)² + … + (xₙ − x̄)²</span><span class="den">n</span></span>'>i</span>
+                </span>
+                <span class="metric-val" id="valPopVariance">-</span>
+              </div>
+            </div>
+
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- VIEW 2: Basic Quick Math Calculator -->
+      <section id="calcView" class="view-panel" role="tabpanel" hidden>
+        <div class="calculator-container card glass-panel">
+          <div class="calc-header">
+            <h2 class="card-title">Máy Tính Toán Cơ Bản</h2>
+            <span class="card-hint">Hỗ trợ +, -, ×, ÷, %, căn bậc 2 và lũy thừa</span>
+          </div>
+
+          <div class="calc-display-wrapper">
+            <div id="calcFormula" class="calc-formula"></div>
+            <input type="text" id="calcInput" class="calc-input" placeholder="0" readonly>
+          </div>
+
+          <div class="calc-keypad">
+            <button type="button" class="calc-btn btn-func" data-action="clear">C</button>
+            <button type="button" class="calc-btn btn-func" data-action="backspace">⌫</button>
+            <button type="button" class="calc-btn btn-func" data-key="%">%</button>
+            <button type="button" class="calc-btn btn-op" data-key="/">÷</button>
+
+            <button type="button" class="calc-btn btn-func" data-action="sqrt">√x</button>
+            <button type="button" class="calc-btn btn-func" data-key="^">xʸ</button>
+            <button type="button" class="calc-btn btn-func" data-key="(">(</button>
+            <button type="button" class="calc-btn btn-func" data-key=")">)</button>
+
+            <button type="button" class="calc-btn" data-key="7">7</button>
+            <button type="button" class="calc-btn" data-key="8">8</button>
+            <button type="button" class="calc-btn" data-key="9">9</button>
+            <button type="button" class="calc-btn btn-op" data-key="*">×</button>
+
+            <button type="button" class="calc-btn" data-key="4">4</button>
+            <button type="button" class="calc-btn" data-key="5">5</button>
+            <button type="button" class="calc-btn" data-key="6">6</button>
+            <button type="button" class="calc-btn btn-op" data-key="-">−</button>
+
+            <button type="button" class="calc-btn" data-key="1">1</button>
+            <button type="button" class="calc-btn" data-key="2">2</button>
+            <button type="button" class="calc-btn" data-key="3">3</button>
+            <button type="button" class="calc-btn btn-op" data-key="+">+</button>
+
+            <button type="button" class="calc-btn" data-key="0">0</button>
+            <button type="button" class="calc-btn" data-key=".">.</button>
+            <button type="button" class="calc-btn" data-action="sendToStats" title="Chuyển kết quả sang bảng thống kê">📥 Nạp</button>
+            <button type="button" class="calc-btn btn-equal" data-action="calculate">=</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Slide-over History Drawer / Modal -->
+    <div id="historyOverlay" class="history-overlay"></div>
+    <aside id="historyDrawer" class="history-drawer" aria-label="Lịch sử tính toán" aria-hidden="true">
+      <div class="drawer-header">
+        <div class="drawer-title-group">
+          <h3>Lịch Sử Tính Toán</h3>
+          <span class="drawer-subtitle">Lưu tự động trong trình duyệt của bạn</span>
+        </div>
+        <button id="btnCloseHistory" class="btn-close" aria-label="Đóng lịch sử">✕</button>
+      </div>
+
+      <div class="drawer-toolbar">
+        <span id="historyTotalCount">0 bản ghi</span>
+        <button id="btnClearHistory" class="btn-text-danger" title="Xóa toàn bộ lịch sử">Xóa tất cả</button>
+      </div>
+
+      <div id="historyListContainer" class="history-list">
+        <div class="history-empty">Chưa có bản ghi nào được lưu. Bấm "Lưu vào Lịch sử" ở bảng thống kê để lưu lại kết quả.</div>
+      </div>
+    </aside>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-message" role="alert" aria-live="polite"></div>
+
+
+  </div>
+
+  <script src="stats.js"></script>
+  <script src="app.js"></script>
+  <script src="info-tooltip.js"></script>
+</body>
+</html>
