@@ -1,5 +1,5 @@
-// Service Worker for Math & Stats App (PWA)
-const CACHE_NAME = 'math-stats-app-v3';
+// Service Worker for BVTMaths App (PWA)
+const CACHE_NAME = 'bvtmaths-app-v1';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -7,6 +7,7 @@ const ASSETS_TO_CACHE = [
   './neo-kinpaku.css',
   './stats.js',
   './app.js',
+  './export.js',
   './info-tooltip.js',
   './manifest.json',
   './icons/icon.svg'

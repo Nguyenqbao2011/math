@@ -96,6 +96,33 @@
       assertClose("Basic calculator percentage", StatsEngine.evaluateBasic("50 * 20%"), 10);
       assertClose("Basic calculator square root", StatsEngine.evaluateBasic("sqrt(144) + 2^3"), 20);
 
+      // Test 8: Outliers (Giá trị bất thường của mẫu số liệu không ghép nhóm)
+      // Example 8a: High outlier [2, 3, 4, 5, 6, 7, 8, 9, 10, 100]
+      // Q1 = 4, Q3 = 9, IQR = 5, Lower = -3.5, Upper = 16.5, Outliers = [100]
+      const s6 = StatsEngine.calculateStats([2, 3, 4, 5, 6, 7, 8, 9, 10, 100]);
+      assertClose("Q1 is 4", s6.q1, 4);
+      assertClose("Q3 is 9", s6.q3, 9);
+      assertClose("IQR is 5", s6.iqr, 5);
+      assertClose("Lower outlier threshold is -3.5", s6.lowerOutlierThreshold, -3.5);
+      assertClose("Upper outlier threshold is 16.5", s6.upperOutlierThreshold, 16.5);
+      assertDeepEqual("Outlier detected is [100]", s6.outliers, [100]);
+
+      // Example 8b: Low outlier [-50, 10, 12, 14, 15, 16, 18, 20]
+      // Q1 = 11, Q3 = 17, IQR = 6, Lower = 2, Upper = 26, Outliers = [-50]
+      const s7 = StatsEngine.calculateStats([-50, 10, 12, 14, 15, 16, 18, 20]);
+      assertClose("Low outlier: lower threshold is 2", s7.lowerOutlierThreshold, 2);
+      assertClose("Low outlier: upper threshold is 26", s7.upperOutlierThreshold, 26);
+      assertDeepEqual("Low outlier detected is [-50]", s7.outliers, [-50]);
+
+      // Example 8c: No outlier [1, 2, 3, 4, 5, 6, 7]
+      const s8 = StatsEngine.calculateStats([1, 2, 3, 4, 5, 6, 7]);
+      assertDeepEqual("No outliers returns empty array", s8.outliers, []);
+
+      // Example 8d: Both low and high outliers [-30, 10, 11, 12, 13, 14, 15, 60]
+      // Q1 = 10.5, Q3 = 14.5, IQR = 4, Lower = 4.5, Upper = 20.5, Outliers = [-30, 60]
+      const s9 = StatsEngine.calculateStats([-30, 10, 11, 12, 13, 14, 15, 60]);
+      assertDeepEqual("Both low and high outliers detected", s9.outliers, [-30, 60]);
+
     } catch (err) {
       failed++;
       logs.push(`<div class="fail">Error in test runner: ${err.message}</div>`);

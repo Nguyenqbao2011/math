@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Math & Thống Kê Pro | Tính Trung Bình, Trung Vị & Máy Tính</title>
+  <title>BVTMaths | Tính Trung Bình, Trung Vị & Máy Tính</title>
 
   <!-- SEO & PWA Meta -->
-  <meta name="description" content="Công cụ tính toán thống kê online và ngoại tuyến: tính trung bình, trung vị, mode, độ lệch chuẩn, phương sai và máy tính toán học cơ bản. Hoạt động trên máy tính và điện thoại.">
+  <meta name="description" content="Công cụ tính toán thống kê online và ngoại tuyến: tính trung bình, trung vị, mốt, độ lệch chuẩn, phương sai và máy tính toán học cơ bản. Xuất kết quả ra Excel và Word. Hoạt động trên máy tính và điện thoại.">
   <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -50,7 +50,7 @@
           <img src="icons/icon.svg" alt="App Logo" width="40" height="40" class="logo-icon">
         </div>
         <div>
-          <h1 class="brand-title">StatsMath <span class="badge-pro">PRO</span></h1>
+          <h1 class="brand-title">BVTMaths <span class="badge-pro">PRO</span></h1>
           <p class="brand-subtitle">Thống kê dữ liệu & Toán học tiện lợi</p>
         </div>
       </div>
@@ -116,7 +116,7 @@
             <!-- Chip Display Container -->
             <div class="chips-wrapper">
               <div class="chips-header">
-                <span class="chips-title">Danh sách số đã sắp xếp ↑ (<span id="chipCount">0</span> số):</span>
+                <span class="chips-title">Dãy số đã nhập (<span id="chipCount">0</span> số):</span>
                 <button type="button" id="btnClearAll" class="btn-text-danger" title="Xóa toàn bộ số">Xóa hết</button>
               </div>
               <div id="chipsContainer" class="chips-container" tabindex="0" aria-label="Danh sách số đã nhập">
@@ -124,7 +124,7 @@
               </div>
             </div>
 
-            <div class="divider"><span>HOẶC DÁN NHANH</span></div>
+            <div class="divider"></div>
 
             <!-- Bulk Paste Textarea -->
             <div class="input-group">
@@ -149,6 +149,14 @@
                 <span>📋 Sao chép kết quả</span>
               </button>
             </div>
+            <div class="input-actions-row">
+              <button type="button" id="btnExportExcel" class="btn btn-secondary" title="Xuất file Excel">
+                <span>📊 Xuất Excel</span>
+              </button>
+              <button type="button" id="btnExportWord" class="btn btn-secondary" title="Xuất file Word">
+                <span>📝 Xuất Word</span>
+              </button>
+            </div>
           </div>
 
           <!-- Right Column: Computed Statistics Results -->
@@ -158,37 +166,26 @@
               <span id="liveStatusBadge" class="status-badge">Tự động cập nhật</span>
             </div>
 
-            <!-- Hero Highlights: Mean & Median -->
-            <div class="hero-stats-grid">
-              <!-- TRUNG BÌNH (Mean) -->
-              <div class="stat-hero-box mean-box">
-                <div class="stat-hero-top">
-                  <span class="stat-hero-label">TRUNG BÌNH (Mean / x̄)
-                    <span class="info-icon" tabindex="0" role="img" aria-label="Công thức trung bình" data-formula='x̄ = <span class="frac"><span class="num">x₁ + x₂ + … + xₙ</span><span class="den">n</span></span>'>i</span>
-                  </span>
-                  <button class="copy-small-btn" data-copy="mean" title="Sao chép trung bình">📋</button>
-                </div>
-                <div class="stat-hero-val" id="valMean">-</div>
-                <div class="stat-hero-desc">Tổng các số chia cho số lượng phần tử</div>
-              </div>
-
-              <!-- TRUNG VỊ (Median) -->
-              <div class="stat-hero-box median-box">
-                <div class="stat-hero-top">
-                  <span class="stat-hero-label">TRUNG VỊ (Median / Me)
-                    <span class="info-icon" tabindex="0" role="img" aria-label="Công thức trung vị" data-formula='Dãy đã sắp xếp. n lẻ: Me = x<sub>(n+1)/2</sub>. n chẵn: Me = <span class="frac"><span class="num">x<sub>n/2</sub> + x<sub>n/2+1</sub></span><span class="den">2</span></span>'>i</span>
-                  </span>
-                  <button class="copy-small-btn" data-copy="median" title="Sao chép trung vị">📋</button>
-                </div>
-                <div class="stat-hero-val" id="valMedian">-</div>
-                <div class="stat-hero-desc">Giá trị chính giữa khi đã sắp xếp dãy số</div>
-              </div>
-            </div>
-
             <!-- Detailed Metrics Grid -->
             <div class="metrics-grid">
+              <!-- TRUNG BÌNH -->
+              <div class="metric-item mean-box">
+                <span class="metric-label">Trung bình (x̄)
+                  <span class="info-icon" tabindex="0" role="img" aria-label="Công thức trung bình" data-formula='x̄ = <span class="frac"><span class="num">x₁ + x₂ + … + xₙ</span><span class="den">n</span></span>'>i</span>
+                </span>
+                <span class="metric-val" id="valMean">-</span>
+              </div>
+
+              <!-- TRUNG VỊ -->
+              <div class="metric-item median-box">
+                <span class="metric-label">Trung vị (Me)
+                  <span class="info-icon" tabindex="0" role="img" aria-label="Công thức trung vị" data-formula='Dãy đã sắp xếp. n lẻ: Me = x<sub>(n+1)/2</sub>. n chẵn: Me = <span class="frac"><span class="num">x<sub>n/2</sub> + x<sub>n/2+1</sub></span><span class="den">2</span></span>'>i</span>
+                </span>
+                <span class="metric-val" id="valMedian">-</span>
+              </div>
+
               <div class="metric-item">
-                <span class="metric-label">Mốt (Mode / Mo)
+                <span class="metric-label">Mốt (Mo)
                   <span class="info-icon" tabindex="0" role="img" aria-label="Công thức mốt" data-formula='M₀ = giá trị có tần số xuất hiện lớn nhất'>i</span>
                 </span>
                 <span class="metric-val" id="valMode">-</span>
@@ -200,19 +197,19 @@
                 <span class="metric-val" id="valCount">0</span>
               </div>
               <div class="metric-item">
-                <span class="metric-label">Tổng cộng (Sum / Σ)
+                <span class="metric-label">Tổng cộng (Σ)
                   <span class="info-icon" tabindex="0" role="img" aria-label="Công thức tổng" data-formula='Σxᵢ = x₁ + x₂ + … + xₙ'>i</span>
                 </span>
                 <span class="metric-val" id="valSum">-</span>
               </div>
               <div class="metric-item">
-                <span class="metric-label">Khoảng biến thiên (Range)
+                <span class="metric-label">Khoảng biến thiên (R)
                   <span class="info-icon" tabindex="0" role="img" aria-label="Công thức khoảng biến thiên" data-formula='R = x<sub>max</sub> − x<sub>min</sub>'>i</span>
                 </span>
                 <span class="metric-val" id="valRange">-</span>
               </div>
               <div class="metric-item">
-                <span class="metric-label">Giá trị nhỏ nhất (Min)
+                <span class="metric-label">Giá trị nhỏ nhất (x<sub>min</sub>)
                   <span class="info-icon" tabindex="0" role="img" aria-label="Công thức giá trị nhỏ nhất" data-formula='x<sub>min</sub> = giá trị nhỏ nhất của dãy số liệu'>i</span>
                 </span>
                 <span class="metric-val" id="valMin">-</span>
@@ -230,7 +227,7 @@
                 <span class="metric-val" id="valQ3">-</span>
               </div>
               <div class="metric-item">
-                <span class="metric-label">Giá trị lớn nhất (Max)
+                <span class="metric-label">Giá trị lớn nhất (x<sub>max</sub>)
                   <span class="info-icon" tabindex="0" role="img" aria-label="Công thức giá trị lớn nhất" data-formula='x<sub>max</sub> = giá trị lớn nhất của dãy số liệu'>i</span>
                 </span>
                 <span class="metric-val" id="valMax">-</span>
@@ -241,14 +238,21 @@
                 </span>
                 <span class="metric-val" id="valIQR">-</span>
               </div>
+              <div class="metric-item metric-item--outlier" id="cardOutlier">
+                <span class="metric-label">Giá trị bất thường
+                  <span class="info-icon" tabindex="0" role="img" aria-label="Công thức giá trị bất thường" data-formula='x là giá trị bất thường nếu:<br>x &lt; Q₁ − 1,5·Δ<sub>Q</sub> hoặc x &gt; Q₃ + 1,5·Δ<sub>Q</sub><br><small>(với Δ<sub>Q</sub> = IQR = Q₃ − Q₁)</small>'>i</span>
+                </span>
+                <span class="metric-val" id="valOutliers">-</span>
+                <span class="metric-sub" id="valOutlierRange">Khoảng chuẩn: -</span>
+              </div>
               <div class="metric-item">
-                <span class="metric-label">Độ lệch chuẩn (Std Dev / σ)
+                <span class="metric-label">Độ lệch chuẩn (σ)
                   <span class="info-icon" tabindex="0" role="img" aria-label="Công thức độ lệch chuẩn" data-formula='s = √<span class="frac"><span class="num">(x₁ − x̄)² + … + (xₙ − x̄)²</span><span class="den">n</span></span>'>i</span>
                 </span>
                 <span class="metric-val" id="valPopStdDev">-</span>
               </div>
               <div class="metric-item">
-                <span class="metric-label">Phương sai (Variance / σ²)
+                <span class="metric-label">Phương sai (σ²)
                   <span class="info-icon" tabindex="0" role="img" aria-label="Công thức phương sai" data-formula='s² = <span class="frac"><span class="num">(x₁ − x̄)² + … + (xₙ − x̄)²</span><span class="den">n</span></span>'>i</span>
                 </span>
                 <span class="metric-val" id="valPopVariance">-</span>
@@ -336,8 +340,13 @@
 
   </div>
 
+  <!-- External Libraries for Export -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx@9.1.0/build/index.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
   <script src="stats.js"></script>
   <script src="app.js"></script>
+  <script src="export.js"></script>
   <script src="info-tooltip.js"></script>
 </body>
 </html>

@@ -56,7 +56,14 @@
         popStdDev: 0,
         sampleVariance: 0,
         sampleStdDev: 0,
-        sorted: []
+        sorted: [],
+        q1: 0,
+        q2: 0,
+        q3: 0,
+        iqr: 0,
+        lowerOutlierThreshold: 0,
+        upperOutlierThreshold: 0,
+        outliers: []
       };
     }
 
@@ -101,6 +108,12 @@
     }
     const iqr = q3 - q1;
 
+    // Outliers (Giá trị bất thường theo chuẩn SGK Toán 10: x < Q1 - 1.5*IQR hoặc x > Q3 + 1.5*IQR)
+    const lowerOutlierThreshold = q1 - 1.5 * iqr;
+    const upperOutlierThreshold = q3 + 1.5 * iqr;
+    const EPS = 1e-9;
+    const outliers = sorted.filter(x => (x < lowerOutlierThreshold - EPS) || (x > upperOutlierThreshold + EPS));
+
     // Mode (Yếu vị)
     const frequencyMap = new Map();
     let maxFreq = 0;
@@ -144,6 +157,9 @@
       q2,
       q3,
       iqr,
+      lowerOutlierThreshold,
+      upperOutlierThreshold,
+      outliers,
       min,
       max,
       range,

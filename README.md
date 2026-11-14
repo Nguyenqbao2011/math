@@ -11,10 +11,13 @@
 1. **Tính toán Thống Kê Tức Thì (Real-time Statistics)**:
    - **Trung bình (Mean / x̄)**
    - **Trung vị (Median / Me)** - Tự động tính đúng cả khi số phần tử chẵn hoặc lẻ
-   - **Mốt** - Phần tử xuất hiện nhiều nhất
+   - **Tứ phân vị (Quartiles: $Q_1, Q_2, Q_3$) & Khoảng tứ phân vị ($\text{IQR} / \Delta_Q$)**
+   - **Giá trị bất thường (Outliers)**: Tự động xác định theo chuẩn SGK Toán 10 ($x < Q_1 - 1{,}5\Delta_Q$ hoặc $x > Q_3 + 1{,}5\Delta_Q$), hiển thị khoảng giá trị chuẩn và làm nổi bật trực quan các phần tử bất thường bằng huy hiệu cảnh báo
+   - **Mốt (Mode)** - Phần tử xuất hiện nhiều nhất
    - **Số lượng phần tử (Count - N)**
    - **Tổng cộng (Sum - Σ)**
    - **Giá trị nhỏ nhất (Min) & Lớn nhất (Max)**
+   - **Khoảng biến thiên (Range)**
    - **Phương sai (Variance / $\sigma^2$)**
    - **Độ lệch chuẩn (Std Dev / $\sigma$)**
    - **Dãy số sắp xếp tăng dần**

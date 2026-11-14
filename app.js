@@ -1,5 +1,5 @@
 /**
- * Math & Thống Kê Pro - Application Controller
+ * BVTMaths - Application Controller
  * Handles dual-mode number synchronization, live computation,
  * local storage history, basic math calculator, and PWA install prompt.
  */
@@ -42,6 +42,9 @@
   const valQ1 = document.getElementById('valQ1');
   const valQ3 = document.getElementById('valQ3');
   const valIQR = document.getElementById('valIQR');
+  const valOutliers = document.getElementById('valOutliers');
+  const valOutlierRange = document.getElementById('valOutlierRange');
+  const cardOutlier = document.getElementById('cardOutlier');
   const valPopStdDev = document.getElementById('valPopStdDev');
   const valPopVariance = document.getElementById('valPopVariance');
 
@@ -189,6 +192,16 @@
       setStatText(valQ1, '-');
       setStatText(valQ3, '-');
       setStatText(valIQR, '-');
+      if (valOutliers) {
+        setStatText(valOutliers, '-');
+        valOutliers.classList.remove('metric-val--alert', 'metric-val--none');
+      }
+      if (valOutlierRange) {
+        valOutlierRange.textContent = 'Khoảng chuẩn: -';
+      }
+      if (cardOutlier) {
+        cardOutlier.classList.remove('has-outlier');
+      }
       setStatText(valPopStdDev, '-');
       setStatText(valPopVariance, '-');
       return;
@@ -219,6 +232,25 @@
     setStatNumber(valQ3, stats.q3);
     setStatNumber(valIQR, stats.iqr);
 
+    // Outliers (Giá trị bất thường theo chuẩn SGK Toán 10)
+    if (valOutliers) {
+      if (stats.outliers.length === 0) {
+        setStatText(valOutliers, 'Không có');
+        valOutliers.classList.add('metric-val--none');
+        valOutliers.classList.remove('metric-val--alert');
+        if (cardOutlier) cardOutlier.classList.remove('has-outlier');
+      } else {
+        const uniqueOutliers = [...new Set(stats.outliers)];
+        setStatText(valOutliers, uniqueOutliers.map(x => formatNumber(x)).join(', '));
+        valOutliers.classList.add('metric-val--alert');
+        valOutliers.classList.remove('metric-val--none');
+        if (cardOutlier) cardOutlier.classList.add('has-outlier');
+      }
+    }
+    if (valOutlierRange) {
+      valOutlierRange.textContent = `Khoảng chuẩn: [${formatNumber(stats.lowerOutlierThreshold)} ; ${formatNumber(stats.upperOutlierThreshold)}]`;
+    }
+
     setStatNumber(valPopVariance, stats.popVariance);
     setStatNumber(valPopStdDev, stats.popStdDev);
   }
@@ -232,11 +264,22 @@
       return;
     }
 
+    const stats = StatsEngine.calculateStats(numbersList);
+    const EPS = 1e-9;
+    const lower = stats.lowerOutlierThreshold;
+    const upper = stats.upperOutlierThreshold;
+    const hasOutliers = stats.outliers && stats.outliers.length > 0;
+
     const fragment = document.createDocumentFragment();
     numbersList.forEach((num, index) => {
+      const isOutlier = hasOutliers && (num < lower - EPS || num > upper + EPS);
       const chip = document.createElement('div');
-      chip.className = 'num-chip';
+      chip.className = 'num-chip' + (isOutlier ? ' chip--outlier' : '');
+      if (isOutlier) {
+        chip.title = `Giá trị bất thường: ${formatNumber(num)} (nằm ngoài khoảng chuẩn [${formatNumber(lower)} ; ${formatNumber(upper)}])`;
+      }
       chip.innerHTML = `
+        ${isOutlier ? '<span class="chip-outlier-badge" title="Giá trị bất thường">⚠️</span>' : ''}
         <span>${formatNumber(num)}</span>
         <button type="button" class="chip-remove-btn" data-index="${index}" title="Xóa số này" aria-label="Xóa ${num}">×</button>
       `;
@@ -326,24 +369,12 @@
 
   // Sample Data Button
   btnSampleData.addEventListener('click', () => {
-    const sample = [12, 25.5, 18, 42, 25.5, 30, 8, 55, 19, 33];
+    const sample = [12, 25.5, 18, 42, 25.5, 30, 8, 85, 19, 33];
     numbersList = [...sample];
     updateStats();       // sorts numbersList internally
     renderChips();       // re-render chips in sorted order
     syncToBulkTextarea();
-    showToast('Đã nạp 10 số liệu mẫu thử nghiệm');
-  });
-
-  // Copy Single Hero Stats
-  document.querySelectorAll('.copy-small-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const type = btn.getAttribute('data-copy');
-      const val = finalText(type === 'mean' ? valMean : valMedian);
-      if (val === '-') return;
-      navigator.clipboard.writeText(val).then(() => {
-        showToast(`Đã sao chép ${type === 'mean' ? 'Trung bình' : 'Trung vị'}: ${val}`);
-      });
-    });
+    showToast('Đã nạp 10 số liệu mẫu thử nghiệm (có giá trị bất thường 85)');
   });
 
   // Copy Full Stats Report
@@ -352,21 +383,30 @@
       showToast('Chưa có dữ liệu để sao chép');
       return;
     }
+    const stats = StatsEngine.calculateStats(numbersList);
+    const outlierStr = stats.outliers.length > 0
+      ? [...new Set(stats.outliers)].map(m => formatNumber(m)).join(', ')
+      : 'Không có';
+
     const report = [
-      `=== BÁO CÁO THỐNG KÊ (StatsMath PRO) ===`,
+      `=== BÁO CÁO THỐNG KÊ (BVTMaths) ===`,
+      `Dãy số đã nhập: ${stats.sorted.join(', ')}`,
       `Số lượng (N): ${finalText(valCount)}`,
-      `Trung bình (Mean): ${finalText(valMean)}`,
-      `Trung vị (Median): ${finalText(valMedian)}`,
-      `Mốt (Mode): ${finalText(valMode)}`,
-      `Nhỏ nhất (Min): ${finalText(valMin)}`,
-      `Tứ phân vị Q₁: ${finalText(valQ1)}`,
-      `Tứ phân vị Q₃: ${finalText(valQ3)}`,
-      `Khoảng tứ phân vị (IQR): ${finalText(valIQR)}`,
-      `Lớn nhất (Max): ${finalText(valMax)}`,
-      `Khoảng biến thiên (Range): ${finalText(valRange)}`,
-      `Độ lệch chuẩn (Std Dev): ${finalText(valPopStdDev)}`,
-      `Phương sai (Variance): ${finalText(valPopVariance)}`
-        ].join('\n');
+      `Trung bình (x̄): ${finalText(valMean)}`,
+      `Trung vị (Me): ${finalText(valMedian)}`,
+      `Mốt (Mo): ${finalText(valMode)}`,
+      `Nhỏ nhất (x_min): ${finalText(valMin)}`,
+      `Q₁: ${finalText(valQ1)}`,
+      `Q₃: ${finalText(valQ3)}`,
+      `IQR: ${finalText(valIQR)}`,
+      `Giá trị bất thường: ${outlierStr}`,
+      `Khoảng chuẩn: [${formatNumber(stats.lowerOutlierThreshold)} ; ${formatNumber(stats.upperOutlierThreshold)}]`,
+      `Lớn nhất (x_max): ${finalText(valMax)}`,
+      `Khoảng biến thiên (R): ${finalText(valRange)}`,
+      `Tổng cộng (Σ): ${finalText(valSum)}`,
+      `Độ lệch chuẩn (σ): ${finalText(valPopStdDev)}`,
+      `Phương sai (σ²): ${finalText(valPopVariance)}`
+    ].join('\n');
 
     navigator.clipboard.writeText(report).then(() => {
       showToast('Đã sao chép toàn bộ báo cáo thống kê');
@@ -634,10 +674,34 @@
   });
 
   window.addEventListener('appinstalled', () => {
-    showToast('🎉 Đã cài đặt StatsMath PRO thành công!');
+    showToast('🎉 Đã cài đặt BVTMaths thành công!');
     btnInstallApp.classList.add('hidden');
     deferredInstallPrompt = null;
   });
+
+  // --- EXPORT BUTTONS ---
+  const btnExportExcel = document.getElementById('btnExportExcel');
+  const btnExportWord = document.getElementById('btnExportWord');
+
+  if (btnExportExcel) {
+    btnExportExcel.addEventListener('click', () => {
+      if (numbersList.length === 0) { showToast('Chưa có dữ liệu để xuất'); return; }
+      try { exportToExcel(numbersList, formatNumber); showToast('Đã xuất file Excel!'); }
+      catch (e) { showToast(e.message || 'Lỗi khi xuất file Excel'); }
+    });
+  }
+
+  if (btnExportWord) {
+    btnExportWord.addEventListener('click', async () => {
+      if (numbersList.length === 0) { showToast('Chưa có dữ liệu để xuất'); return; }
+      try {
+        await exportToWord(numbersList, formatNumber);
+        showToast('Đã xuất file Word!');
+      } catch (e) {
+        showToast(e.message || 'Lỗi khi xuất file Word');
+      }
+    });
+  }
 
   // --- INITIALIZATION ---
   renderChips();
