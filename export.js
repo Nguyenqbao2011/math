@@ -1,5 +1,5 @@
 /**
- * BVTMaths - Export Module (Excel & Word)
+ * Maths - Export Module (Excel & Word)
  * Exports entered numbers and calculated statistical metrics cleanly.
  */
 
@@ -60,7 +60,7 @@
     const data = getStatsData(numbersList, formatNumber);
 
     const sheetData = [
-      ['BVTMaths - BÁO CÁO THỐNG KÊ'],
+      ['Maths - BÁO CÁO THỐNG KÊ'],
       [],
       ['Dãy số đã nhập:', data.sortedString],
       [],
@@ -80,9 +80,9 @@
     ];
 
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Thống kê BVTMaths');
+    XLSX.utils.book_append_sheet(wb, ws, 'Thống kê Maths');
 
-    XLSX.writeFile(wb, 'BVTMaths_KetQua.xlsx');
+    XLSX.writeFile(wb, 'Maths_KetQua.xlsx');
   }
 
   async function exportToWord(numbersList, formatNumber) {
@@ -151,7 +151,7 @@
         children: [
           new Paragraph({
             heading: HeadingLevel.HEADING_1,
-            children: [new TextRun({ text: 'BVTMaths - Báo Cáo Kết Quả Thống Kê', bold: true, color: '0284C7' })],
+            children: [new TextRun({ text: 'Maths - Báo Cáo Kết Quả Thống Kê', bold: true, color: '0284C7' })],
             alignment: AlignmentType.CENTER,
             spacing: { after: 300 }
           }),
@@ -176,12 +176,12 @@
 
     const blob = await Packer.toBlob(doc);
     if (typeof saveAs !== 'undefined') {
-      saveAs(blob, 'BVTMaths_KetQua.docx');
+      saveAs(blob, 'Maths_KetQua.docx');
     } else {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'BVTMaths_KetQua.docx';
+      a.download = 'Maths_KetQua.docx';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

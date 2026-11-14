@@ -1,5 +1,5 @@
-// Service Worker for BVTMaths App (PWA)
-const CACHE_NAME = 'bvtmaths-app-v1';
+// Service Worker for Maths App (PWA)
+const CACHE_NAME = 'maths-app-v1';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

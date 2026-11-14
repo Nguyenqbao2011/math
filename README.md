@@ -1,4 +1,4 @@
-# 📊 StatsMath PRO - Công Cụ Thống Kê & Toán Học PWA
+# 📊 Maths PRO - Công Cụ Thống Kê & Toán Học PWA
 
 Ứng dụng web và cài đặt (Progressive Web App - PWA) chuyên tính toán thống kê mô tả (Trung bình, Trung vị, Mode, Độ lệch chuẩn, Phương sai) và máy tính toán học cơ bản. 
 

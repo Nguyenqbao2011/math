@@ -1,6 +1,6 @@
 {
-  "name": "BVTMaths",
-  "short_name": "BVTMaths",
+  "name": "Maths",
+  "short_name": "Maths",
   "description": "Công cụ tính toán thống kê (Trung bình, Trung vị, Mốt, Độ lệch chuẩn) & Máy tính toán học tiện lợi",
   "start_url": "./index.html",
   "scope": "./",

@@ -1,5 +1,5 @@
 /**
- * BVTMaths - Application Controller
+ * Maths - Application Controller
  * Handles dual-mode number synchronization, live computation,
  * local storage history, basic math calculator, and PWA install prompt.
  */
@@ -389,7 +389,7 @@
       : 'Không có';
 
     const report = [
-      `=== BÁO CÁO THỐNG KÊ (BVTMaths) ===`,
+      `=== BÁO CÁO THỐNG KÊ (Maths) ===`,
       `Dãy số đã nhập: ${stats.sorted.join(', ')}`,
       `Số lượng (N): ${finalText(valCount)}`,
       `Trung bình (x̄): ${finalText(valMean)}`,
@@ -674,7 +674,7 @@
   });
 
   window.addEventListener('appinstalled', () => {
-    showToast('🎉 Đã cài đặt BVTMaths thành công!');
+    showToast('🎉 Đã cài đặt Maths thành công!');
     btnInstallApp.classList.add('hidden');
     deferredInstallPrompt = null;
   });
