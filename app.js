@@ -369,12 +369,12 @@
 
   // Sample Data Button
   btnSampleData.addEventListener('click', () => {
-    const sample = [12, 25.5, 18, 42, 25.5, 30, 8, 85, 19, 33];
+    const sample = [4.6, 1.2, 4.5, 0.8, 2.5, 3.5, 4.0, 2.0, 10.5, 6.2, -2.5, 1.8, 1.5, 4.0, 7.8, 25.4, 4.0, 5.0, -2.0, 18.5, 11.5, 3.0, 2.2, 7.5, -1.2, 4.5, 7.5, 2.0, 7.0, 7.2, 3.2, -15.5, 8.8, 3.8, -0.5, 2.4, 6.0, 3.6, 0.5, 3.4, 10.0, 3.5, 9.5, -1.8, 5.8, -8.2, 12.0, 8.2, 5.0, -2.5, 8.0, 11.0, 1.0, 9.0, 3.5, 6.5, 2.5, 6.8, 1.5, 13.0, 6.0, 0.2, 4.0, 4.5, 4.8, -0.8, 5.0, 2.5, 6.4, 0.5, 3.5, 8.0, 5.5, 2.8, 2.5, 4.5, 6.5, 9.2, 22.0, 4.4, 4.0, -1.5, 9.8, -0.5, 8.5, 3.5, 1.5, 1.0, 3.0, 5.2, 4.0, 0.0, 4.2, 0.0, 0.0, 5.5, 3.0, 5.4, 7.0, -1.0];
     numbersList = [...sample];
     updateStats();       // sorts numbersList internally
     renderChips();       // re-render chips in sorted order
     syncToBulkTextarea();
-    showToast('Đã nạp 10 số liệu mẫu thử nghiệm (có giá trị bất thường 85)');
+    showToast('Đã nạp 100 số liệu mẫu thử nghiệm mới');
   });
 
   // Copy Full Stats Report
